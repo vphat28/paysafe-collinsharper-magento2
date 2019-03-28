@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <system>
+            <media_storage_configuration>
+                <allowed_resources>
+                    <chmu_folder>chcore</chmu_folder>
+                </allowed_resources>
+            </media_storage_configuration>
+        </system>
+        <catalog>
+            <chcore>
+                <active>1</active>
+                <weight_unit>KILOGRAM</weight_unit>
+                <measure_unit>METER</measure_unit>
+                <default_length>10</default_length>
+                <default_width>10</default_width>
+                <default_height>10</default_height>
+                <product_length>length</product_length>
+                <product_width>width</product_width>
+                <product_height>height</product_height>
+            </chcore>
+        </catalog>
+    </default>
+</config>

@@ -1,0 +1,295 @@
+<?xml version="1.0"?>
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <preference for="\Magento\Payment\Gateway\Command\CommandPoolInterface" type="\Magento\Payment\Gateway\Command\CommandPool" />
+
+    <!-- Payment Method Facade configuration -->
+    <virtualType name="PaySafePaymentGatewayFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">\CollinsHarper\Paysafe\Model\Ui\ConfigProvider::CODE</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Magento\Payment\Block\Info</argument>
+            <argument name="valueHandlerPool" xsi:type="object">PaySafePaymentGatewayValueHandlerPool</argument>
+            <argument name="commandPool" xsi:type="object">PaySafePaymentGatewayCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Configuration reader -->
+    <type name="CollinsHarper\Paysafe\Gateway\Config\Config">
+        <arguments>
+            <argument name="pathPattern" xsi:type="const">Magento\Payment\Gateway\Config\Config::DEFAULT_PATH_PATTERN</argument>
+            <argument name="methodCode" xsi:type="const">CollinsHarper\Paysafe\Model\Ui\ConfigProvider::CODE</argument>
+        </arguments>
+    </type>
+
+    <!-- Commands infrastructure -->
+    <virtualType name="PaySafePaymentGatewayCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="authorize" xsi:type="string">PaySafePaymentGatewayAuthorizeCommand</item>
+                <item name="capture" xsi:type="string">PaySafeCaptureStrategyCommand</item>
+                <item name="settlement" xsi:type="string">PaySafePaymentGatewayCaptureCommand</item>
+                <item name="sale" xsi:type="string">PaySafeSaleCommand</item>
+                <item name="void" xsi:type="string">PaySafePaymentGatewayVoidCommand</item>
+                <item name="cancel" xsi:type="string">PaySafePaymentGatewayCancelCommand</item>
+                <item name="refund" xsi:type="string">PaySafeRefundStrategyCommand</item>
+                <item name="refund_hosted" xsi:type="string">PaySafePaymentGatewayRefundCommand</item>
+                <item name="vault_refund" xsi:type="string">PaySafePaymentGatewayVaultRefundCommand</item>
+                <item name="vault_authorize" xsi:type="string">PaySafeVaultAuthorizeCommand</item>
+                <item name="vault_capture" xsi:type="string">PaySafeVaultCaptureCommand</item>
+                <item name="vault_sale" xsi:type="string">PaySafeVaultSaleCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="PaySafeCaptureStrategyCommand" type="CollinsHarper\Paysafe\Gateway\Command\CaptureStrategyCommand">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">PaySafePaymentGatewayCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="PaySafeRefundStrategyCommand" type="CollinsHarper\Paysafe\Gateway\Command\RefundStrategyCommand">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">PaySafePaymentGatewayCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Authorize command -->
+    <virtualType name="PaySafePaymentGatewayAuthorizeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">CollinsHarper\Paysafe\Gateway\Request\AuthorizationRequest</argument>
+            <argument name="handler" xsi:type="object">PaySafeAuthorizationHandler</argument>
+            <argument name="transferFactory" xsi:type="object">CollinsHarper\Paysafe\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">CollinsHarper\Paysafe\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">CollinsHarper\Paysafe\Gateway\Http\Client\HTTPClient</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Authorize Handler -->
+    <virtualType name="PaySafeAuthorizationHandler" type="Magento\Payment\Gateway\Response\HandlerChain">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="order" xsi:type="string">CollinsHarper\Paysafe\Gateway\Response\AuthorizeResponseHandler</item>
+                <item name="vault_details" xsi:type="string">CollinsHarper\Paysafe\Gateway\Response\VaultDetailsHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Authorization Request -->
+    <type name="CollinsHarper\Paysafe\Gateway\Request\AuthorizationRequest">
+        <arguments>
+            <argument name="config" xsi:type="object">CollinsHarper\Paysafe\Gateway\Config\Config</argument>
+        </arguments>
+    </type>
+
+    <!-- Capture command -->
+    <virtualType name="PaySafePaymentGatewayCaptureCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">CollinsHarper\Paysafe\Gateway\Request\CaptureRequest</argument>
+            <argument name="handler" xsi:type="object">CollinsHarper\Paysafe\Gateway\Response\CaptureResponseHandler</argument>
+            <argument name="transferFactory" xsi:type="object">CollinsHarper\Paysafe\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">CollinsHarper\Paysafe\Gateway\Validator\CaptureResponseValidator</argument>
+            <argument name="client" xsi:type="object">CollinsHarper\Paysafe\Gateway\Http\Client\HTTPClient</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Capture Request -->
+    <type name="CollinsHarper\Paysafe\Gateway\Request\CaptureRequest">
+        <arguments>
+            <argument name="config" xsi:type="object">CollinsHarper\Paysafe\Gateway\Config\Config</argument>
+        </arguments>
+    </type>
+
+    <!-- Sale command -->
+    <virtualType name="PaySafeSaleCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">PaySafeSaleRequest</argument>
+            <argument name="handler" xsi:type="object">CollinsHarper\Paysafe\Gateway\Response\SaleResponseHandler</argument>
+            <argument name="transferFactory" xsi:type="object">CollinsHarper\Paysafe\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">CollinsHarper\Paysafe\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">CollinsHarper\Paysafe\Gateway\Http\Client\HTTPClient</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Sale Request -->
+    <virtualType name="PaySafeSaleRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="authorize" xsi:type="string">CollinsHarper\Paysafe\Gateway\Request\AuthorizationRequest</item>
+                <item name="settlement" xsi:type="string">CollinsHarper\Paysafe\Gateway\Request\SettlementRequest</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <type name="CollinsHarper\Paysafe\Gateway\Request\SaleRequest">
+        <arguments>
+            <argument name="config" xsi:type="object">CollinsHarper\Paysafe\Gateway\Config\Config</argument>
+        </arguments>
+    </type>
+
+    <!-- Void command -->
+    <virtualType name="PaySafePaymentGatewayVoidCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">CollinsHarper\Paysafe\Gateway\Request\VoidRequest</argument>
+            <argument name="handler" xsi:type="object">CollinsHarper\Paysafe\Gateway\Response\VoidResponseHandler</argument>
+            <argument name="transferFactory" xsi:type="object">CollinsHarper\Paysafe\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">CollinsHarper\Paysafe\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">CollinsHarper\Paysafe\Gateway\Http\Client\HTTPClient</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Void Request -->
+    <type name="CollinsHarper\Paysafe\Gateway\Request\VoidRequest">
+        <arguments>
+            <argument name="config" xsi:type="object">CollinsHarper\Paysafe\Gateway\Config\Config</argument>
+        </arguments>
+    </type>
+
+    <!-- Cancel command -->
+    <virtualType name="PaySafePaymentGatewayCancelCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">CollinsHarper\Paysafe\Gateway\Request\CancelRequest</argument>
+            <argument name="handler" xsi:type="object">CollinsHarper\Paysafe\Gateway\Response\CancelResponseHandler</argument>
+            <argument name="transferFactory" xsi:type="object">CollinsHarper\Paysafe\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">CollinsHarper\Paysafe\Gateway\Validator\CancelCodeValidator</argument>
+            <argument name="client" xsi:type="object">CollinsHarper\Paysafe\Gateway\Http\Client\HTTPClient</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Cancel Request -->
+    <type name="CollinsHarper\Paysafe\Gateway\Request\CancelRequest">
+        <arguments>
+            <argument name="config" xsi:type="object">CollinsHarper\Paysafe\Gateway\Config\Config</argument>
+        </arguments>
+    </type>
+
+    <!-- Refund command -->
+    <virtualType name="PaySafePaymentGatewayRefundCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">CollinsHarper\Paysafe\Gateway\Request\RefundRequest</argument>
+            <argument name="handler" xsi:type="object">CollinsHarper\Paysafe\Gateway\Response\RefundResponseHandler</argument>
+            <argument name="transferFactory" xsi:type="object">CollinsHarper\Paysafe\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">CollinsHarper\Paysafe\Gateway\Validator\RefundCodeValidator</argument>
+            <argument name="client" xsi:type="object">CollinsHarper\Paysafe\Gateway\Http\Client\HTTPClient</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Vault Refund command -->
+    <virtualType name="PaySafePaymentGatewayVaultRefundCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">CollinsHarper\Paysafe\Gateway\Request\VaultRefundRequest</argument>
+            <argument name="handler" xsi:type="object">CollinsHarper\Paysafe\Gateway\Response\VaultRefundResponseHandler</argument>
+            <argument name="transferFactory" xsi:type="object">CollinsHarper\Paysafe\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">CollinsHarper\Paysafe\Gateway\Validator\RefundCodeValidator</argument>
+            <argument name="client" xsi:type="object">CollinsHarper\Paysafe\Gateway\Http\Client\HTTPClient</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Refund Request -->
+    <type name="CollinsHarper\Paysafe\Gateway\Request\RefundRequest">
+        <arguments>
+            <argument name="config" xsi:type="object">CollinsHarper\Paysafe\Gateway\Config\Config</argument>
+        </arguments>
+    </type>
+
+    <!-- Response handlers -->
+    <virtualType name="PaySafePaymentGatewayResponseHandlerComposite" type="Magento\Payment\Gateway\Response\HandlerChain">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="authorizeresponse" xsi:type="string">CollinsHarper\Paysafe\Gateway\Response\AuthorizeResponseHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Value handlers infrastructure -->
+    <virtualType name="PaySafePaymentGatewayValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">PaySafePaymentGatewayConfigValueHandler</item>
+                <item name="can_void" xsi:type="string">CollinsHarper\Paysafe\Gateway\Config\CanVoidHandler</item>
+                <item name="can_cancel" xsi:type="string">CollinsHarper\Paysafe\Gateway\Config\CanVoidHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="PaySafePaymentGatewayConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">CollinsHarper\Paysafe\Gateway\Config\Config</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Vault -->
+    <virtualType name="PaySafeVaultPaymentConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">CollinsHarper\Paysafe\Model\Ui\ConfigProvider::CC_VAULT_CODE</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="PaySafeCreditCardVaultFacade" type="Magento\Vault\Model\Method\Vault">
+        <arguments>
+            <argument name="config" xsi:type="object">PaySafeVaultPaymentConfig</argument>
+            <argument name="valueHandlerPool" xsi:type="object">PaySafeVaultPaymentValueHandlerPool</argument>
+            <argument name="vaultProvider" xsi:type="object">PaySafePaymentGatewayFacade</argument>
+            <argument name="code" xsi:type="const">CollinsHarper\Paysafe\Model\Ui\ConfigProvider::CC_VAULT_CODE</argument>
+            <argument name="commandManagerPool" xsi:type="object">PaySafeCcVaultCommandManagerPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="PaySafeVaultAuthorizeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">CollinsHarper\Paysafe\Gateway\Request\VaultAuthorizationRequest</argument>
+            <argument name="transferFactory" xsi:type="object">CollinsHarper\Paysafe\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">CollinsHarper\Paysafe\Gateway\Http\Client\HTTPClient</argument>
+            <argument name="handler" xsi:type="object">CollinsHarper\Paysafe\Gateway\Response\VaultAuthorizeResponseHandler</argument>
+            <argument name="validator" xsi:type="object">CollinsHarper\Paysafe\Gateway\Validator\VaultResponseCodeValidator</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="PaySafeVaultCaptureCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">CollinsHarper\Paysafe\Gateway\Request\VaultCaptureRequest</argument>
+            <argument name="transferFactory" xsi:type="object">CollinsHarper\Paysafe\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">CollinsHarper\Paysafe\Gateway\Http\Client\HTTPClient</argument>
+            <argument name="handler" xsi:type="object">CollinsHarper\Paysafe\Gateway\Response\VaultCaptureResponseHandler</argument>
+            <argument name="validator" xsi:type="object">CollinsHarper\Paysafe\Gateway\Validator\VaultResponseCodeValidator</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="PaySafeVaultSaleCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">CollinsHarper\Paysafe\Gateway\Request\VaultAuthorizationRequest</argument>
+            <argument name="transferFactory" xsi:type="object">CollinsHarper\Paysafe\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">CollinsHarper\Paysafe\Gateway\Http\Client\HTTPClient</argument>
+            <argument name="handler" xsi:type="object">CollinsHarper\Paysafe\Gateway\Response\VaultSettlementResponseHandler</argument>
+            <argument name="validator" xsi:type="object">CollinsHarper\Paysafe\Gateway\Validator\VaultResponseCodeValidator</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="PaySafeCommandManager" type="Magento\Payment\Gateway\Command\CommandManager">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">PaySafePaymentGatewayCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="PaySafeCcVaultCommandManagerPool" type="Magento\Payment\Gateway\Command\CommandManagerPool">
+        <arguments>
+            <argument name="executors" xsi:type="array">
+                <item name="chpaysafe" xsi:type="string">PaySafeCommandManager</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="PaySafeVaultPaymentValueHandlerPool" type="VaultPaymentValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">PaySafeVaultPaymentValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="PaySafeVaultPaymentValueHandler" type="VaultPaymentDefaultValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">PaySafeVaultPaymentConfig</argument>
+        </arguments>
+    </virtualType>
+</config>

@@ -1,0 +1,92 @@
+<div data-bind="attr: {class: 'payment-method payment-method-braintree'}, css: {'_active': isActive()}">
+    <div class="payment-method-title field choice">
+        <input type="radio"
+               name="payment[method]"
+               class="radio"
+               data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
+        <label class="label" data-bind="attr: {'for': getCode()}">
+            <span data-bind="text: getTitle()"></span>
+        </label>
+    </div>
+    <div class="payment-method-content">
+        <!-- ko foreach: getRegion('messages') -->
+        <!-- ko template: getTemplate() --><!-- /ko -->
+        <!--/ko-->
+        <div class="payment-method-billing-address">
+            <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
+        <form id="chpaysafe_form" class="form" data-bind="" method="post" action="#">
+            <!-- ko if: isInteracEnabled() -->
+            <div class="field choice required">
+                <label class="label">
+                    <span><!-- ko i18n: 'Select the payment method used for Paysafe.'--><!-- /ko --></span>
+                </label>
+                <div class="control">
+                    <br>
+                    <input id="paysafe_use_interac"
+                           type="radio"
+                           data-bind="attr: {title: $t('Pay via Interac'), 'data-validate': JSON.stringify({'validate-one-required-by-name':true})}, click: isShowInteracCcForm"
+                           class="radio"
+                           name="payment[paysafe_use_interac]">
+                    <label for="paysafe_use_interac"><!-- ko i18n: 'Pay via Interac'--><!-- /ko --></label>
+                </div>
+                <div class="control">
+                    <input id="paysafe_use_cc"
+                           type="radio"
+                           data-bind="attr: {title: $t('Pay using Credit Card'), 'data-validate': JSON.stringify({'validate-one-required-by-name':true})}, click: isShowInteracCcForm"
+                           class="radio"
+                           name="payment[paysafe_use_interac]"
+                    >
+                    <label for="paysafe_use_cc"><!-- ko i18n: 'Pay using Credit Card'--><!-- /ko --></label>
+                </div>
+            </div>
+            <!--/ko-->
+            <br>
+            <!-- ko if: (isSilentPost())-->
+            <!-- ko template: 'CollinsHarper_Paysafe/payment/cc-form' --><!-- /ko -->
+            <!-- ko if: (isVaultEnabled())-->
+            <div class="field choice">
+                <input type="checkbox"
+                       name="vault[is_enabled]"
+                       class="checkbox"
+                       data-bind="attr: {'id': getCode() + '_enable_vault'}, checked: vaultEnabler.isActivePaymentTokenEnabler"/>
+                <label class="label" data-bind="attr: {'for': getCode() + '_enable_vault'}">
+                    <span><!-- ko i18n: 'Save for later use.'--><!-- /ko --></span>
+                </label>
+                <div class="field-tooltip toggle">
+                    <span class="field-tooltip-action action-vault"
+                          tabindex="0"
+                          data-toggle="dropdown"
+                          data-bind="attr: {title: $t('What is this?')}, mageInit: {'dropdown':{'activeClass': '_active'}}">
+                        <span translate="'What is this?'"></span>
+                    </span>
+                    <div class="field-tooltip-content"
+                         data-target="dropdown"
+                         translate="'We store you payment information securely on Paysafe servers via SSL.'"></div>
+                </div>
+            </div>
+            <!-- /ko -->
+            <!-- /ko -->
+            <input type="submit" id="paysafe_submit"  style="display:none" />
+        </form>
+        <div class="checkout-agreements-block">
+            <!-- ko foreach: $parent.getRegion('before-place-order') -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
+        <div class="actions-toolbar">
+            <div class="primary">
+                <button class="action primary checkout"
+                        type="submit"
+                        data-bind="
+                        click: placeOrderToPaySafe,
+                        attr: {title: $t('Place Order')}
+                ">
+                    <span data-bind="i18n: 'Place Order'"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

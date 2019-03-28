@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="catalog">
+            <group id="chcore" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Collins Harper Measure Unit</label>
+                <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="weight_unit" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Weight Unit</label>
+                    <source_model>\CollinsHarper\Core\Model\Source\WeightUnit</source_model>
+                </field>
+                <field id="measure_unit" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Measure Unit</label>
+                    <source_model>\CollinsHarper\Core\Model\Source\MeasureUnit</source_model>
+                </field>
+                <field id="default_length" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Default Length</label>
+                </field>
+                <field id="default_width" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Default Width</label>
+                </field>
+                <field id="default_height" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Default Height</label>
+                </field>
+
+                <field id="shipping_length" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Product Attribute for Length</label>
+                    <source_model>CollinsHarper\Core\Model\Source\Product\Attributes</source_model>
+                </field>
+                <field id="shipping_width" translate="label" type="select" sortOrder="92" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Product Attribute for Width</label>
+                    <source_model>CollinsHarper\Core\Model\Source\Product\Attributes</source_model>
+                </field>
+                <field id="shipping_height" translate="label" type="select" sortOrder="94" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Product Attribute for Height</label>
+                    <source_model>CollinsHarper\Core\Model\Source\Product\Attributes</source_model>
+                </field>
+
+            </group>
+        </section>
+    </system>
+</config>

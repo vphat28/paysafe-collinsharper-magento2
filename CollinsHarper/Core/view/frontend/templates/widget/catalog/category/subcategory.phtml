@@ -1,0 +1,37 @@
+
+<div id="categories">
+    <div class="col_full">
+        <div class="listing" >
+            <?php $currentCategory=$this->getCurrentCategory()?>
+            <?php $categoryId = $this->getCurrentCategory()->getId() ?>
+            <?php
+            $childrenCategories=$this->getCurrentChildCategories();
+            $childrenCategoriesCount = count($childrenCategories->getData());
+            ?>
+            <?php if($childrenCategoriesCount):?>
+                <?php foreach ($childrenCategories as $_category):?>
+                    <?php if($_category->getIsActive()):
+
+                        // tODO this is completely inefficient
+                        $_category->load($_category->getId());
+                        if($_category->getData('image')):?>
+                            <div class="category-box">
+                                <div class="category-name">
+                                    <p><a href="<?php echo $this->getCategoryUrl($_category)?>">
+                                            <?php echo $block->escapeHtml($_category->getName()); ?><img id="arrow-icon" src="<?php echo $this->getSkinUrl('images/arrow.png') ?>" /></a></p>
+                                </div>
+
+                                <div class="category-image-box">
+                                    <a href="<?php echo $this->getCategoryUrl($_category)?>"><img src=<?php echo $_category->getImageUrl(); ?> title="<?php echo $block->escapeHtml($_category->getName()); ?>" /></a>
+                                </div>
+                                <a href="<?php echo $this->getCategoryUrl($_category)?>"><img id="noimg-viewproducts-btn" src="<?php echo $this->getSkinUrl('images/viewproducts.png') ?>" /></a>
+                            </div>
+                        <?php endif; ?>
+                    <?php endif;?>
+                <?endforeach?>
+
+            <?php endif;?>
+        </div>
+        <br clear=all>
+    </div>
+</div>

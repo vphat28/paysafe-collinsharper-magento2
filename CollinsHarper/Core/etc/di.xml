@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2015 Collins Harper. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/ObjectManager/etc/config.xsd">
+<type name="YourNamespace\YourModule\Logger\Handler">
+    <arguments>
+        <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+    </arguments>
+</type>
+<type name="CollinsHarper\Core\Logger\Logger">
+    <arguments>
+        <argument name="name" xsi:type="string">chcore</argument>
+        <argument name="handlers"  xsi:type="array">
+            <item name="system" xsi:type="object">CollinsHarper\Core\Logger\Handler</item>
+        </argument>
+    </arguments>
+</type>
+</config>

@@ -1,0 +1,3 @@
+20160504 Steve Harper <stharper@collinsharper.com>
+
+Created CHANGELOG.txt file for future updates

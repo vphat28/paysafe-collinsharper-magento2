@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Copyright © 2016 Collins Harper. All rights reserved.
+ * See LICENSE.txt for license details.
+ */
+-->
+<widgets xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Widget:etc/widget.xsd">
+
+    <widget id="catalog_category_subcategories"
+            class="CollinsHarper\Core\Block\Widget\Catalog\Category\Subcategories"
+            is_email_compatible="true"
+            placeholder_image="CollinsHarper_Core::images/category_widget_subcategory.png">
+        <label translate="true">Catalog Category SubCategories</label>
+        <description translate="true">Display all SubCategories</description>
+        <parameters>
+            <parameter name="shelf_name" xsi:type="text" visible="true">
+                <label translate="true">Shelf name</label>
+                <description translate="true">If empty, we'll use the category name here.</description>
+            </parameter>
+            <parameter name="limit" xsi:type="text" visible="true">
+                <label translate="true">Limit</label>
+            </parameter>
+        </parameters>
+    </widget>
+</widgets>
